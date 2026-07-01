@@ -12,6 +12,8 @@ drop it onto a gradient background, add padding and a shadow, mark it up with
 arrows, text, highlights and blur, and copy or download. All locally, in your
 browser.
 
+**[🌐 Website](https://jitheshkt.github.io/open-screenshot/)** · **[🔒 Privacy Policy](https://jitheshkt.github.io/open-screenshot/privacy.html)**
+
 ---
 
 ## Why this exists

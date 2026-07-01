@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Screenshot — beautiful screenshots, zero nonsense</title>
+    <meta
+      name="description"
+      content="A fast, open-source, privacy-friendly screenshot extension for Chrome. Capture, drop onto a gradient, annotate, and export — all locally."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b8cff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7V5a2 2 0 0 1 2-2h2'/%3E%3Cpath d='M17 3h2a2 2 0 0 1 2 2v2'/%3E%3Cpath d='M21 17v2a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='M7 21H5a2 2 0 0 1-2-2v-2'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #0a0c10;
+        --surface: #12161e;
+        --surface-2: #171c26;
+        --border: #232a38;
+        --text: #eaedf3;
+        --dim: #98a1b3;
+        --faint: #5c6577;
+        --accent: #5b8cff;
+        --accent-hi: #7ba6ff;
+        --good: #46d19e;
+        --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--text);
+        line-height: 1.6;
+        background:
+          radial-gradient(1100px 550px at 85% -5%, #17203a 0%, transparent 55%),
+          radial-gradient(900px 500px at 0% 10%, #101a2e 0%, transparent 50%),
+          var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+      /* Nav */
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 20px 24px; max-width: 1120px; margin: 0 auto;
+      }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; }
+      .brand svg { width: 24px; height: 24px; color: var(--accent); }
+      .nav__links { display: flex; align-items: center; gap: 22px; font-size: 14px; }
+      .nav__links a { color: var(--dim); text-decoration: none; transition: color .15s; }
+      .nav__links a:hover { color: var(--text); }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 14px;
+        text-decoration: none; border: 1px solid var(--border);
+        transition: transform .08s ease, filter .15s ease, border-color .15s ease, background .15s ease;
+      }
+      .btn svg { width: 16px; height: 16px; }
+      .btn--primary { background: var(--accent); border-color: var(--accent); color: #06122e; }
+      .btn--primary:hover { filter: brightness(1.07); }
+      .btn--ghost { color: var(--text); }
+      .btn--ghost:hover { border-color: var(--accent); }
+      .btn:active { transform: translateY(1px); }
+
+      /* Hero */
+      .hero {
+        display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center;
+        padding: 72px 0 84px;
+      }
+      .eyebrow {
+        font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--accent-hi); font-weight: 600; margin: 0 0 18px;
+        display: inline-flex; align-items: center; gap: 8px;
+      }
+      .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--good); box-shadow: 0 0 10px var(--good); }
+      h1 {
+        font-size: clamp(36px, 5.5vw, 60px); line-height: 1.03; letter-spacing: -0.03em;
+        margin: 0 0 20px; font-weight: 720; text-wrap: balance;
+      }
+      h1 .grad {
+        background: linear-gradient(110deg, #ffd54a, #5b8cff 55%, #06b6d4);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .lede { font-size: 18px; color: var(--dim); margin: 0 0 30px; max-width: 46ch; }
+      .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+      .trust { margin-top: 22px; font-size: 13px; color: var(--faint); display: flex; gap: 16px; flex-wrap: wrap; }
+      .trust span { display: inline-flex; align-items: center; gap: 6px; }
+      .trust .tick { color: var(--good); }
+
+      /* Hero visual — a self-demo of what the tool produces */
+      .demo {
+        border-radius: 20px; padding: 40px;
+        background: linear-gradient(135deg, #ffbf00 0%, #06b6d4 100%);
+        box-shadow: 0 40px 80px -30px rgba(0,0,0,0.7);
+        position: relative;
+      }
+      .window {
+        background: #1b1f27; border-radius: 12px; overflow: hidden;
+        box-shadow: 0 18px 40px -12px rgba(0,0,0,0.55);
+      }
+      .window__bar { display: flex; gap: 7px; padding: 12px 14px; background: #21262f; }
+      .window__bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a4150; display: block; }
+      .window__bar i:nth-child(1) { background: #ef5f57; }
+      .window__bar i:nth-child(2) { background: #febc2e; }
+      .window__bar i:nth-child(3) { background: #28c840; }
+      .window__body { padding: 20px; }
+      .line { height: 11px; border-radius: 6px; background: #2c3340; margin-bottom: 12px; }
+      .line.w-70 { width: 70%; } .line.w-90 { width: 90%; } .line.w-50 { width: 50%; }
+      .line.title { height: 16px; width: 55%; background: #3b4557; margin-bottom: 18px; }
+      .hl { background: rgba(255,191,0,0.28); box-shadow: 0 0 0 2px rgba(255,191,0,0.28); }
+      .demo__arrow { position: absolute; right: 14px; bottom: 26px; width: 120px; height: 120px; color: #5b8cff; }
+      .demo__badge {
+        position: absolute; top: -14px; left: 24px; background: #12161e; color: var(--accent-hi);
+        border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      }
+
+      /* Section */
+      section { padding: 40px 0; }
+      .section-head { text-align: center; max-width: 620px; margin: 0 auto 44px; }
+      .section-head h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -0.02em; margin: 0 0 12px; text-wrap: balance; }
+      .section-head p { color: var(--dim); margin: 0; font-size: 16px; }
+
+      .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .card {
+        background: linear-gradient(180deg, var(--surface) 0%, #0f131a 100%);
+        border: 1px solid var(--border); border-radius: 16px; padding: 22px;
+        transition: transform .18s ease, border-color .18s ease;
+      }
+      .card:hover { transform: translateY(-3px); border-color: #33405a; }
+      .card .ic {
+        width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+        color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); margin-bottom: 14px;
+      }
+      .card .ic svg { width: 21px; height: 21px; }
+      .card h3 { margin: 0 0 6px; font-size: 16px; }
+      .card p { margin: 0; color: var(--dim); font-size: 14px; }
+
+      /* Steps */
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: step; }
+      .step { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+      .step__n {
+        counter-increment: step; font-family: var(--mono); font-size: 13px; color: var(--accent-hi);
+        border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px;
+        display: grid; place-items: center; margin-bottom: 14px;
+      }
+      .step__n::before { content: counter(step); }
+      .step h3 { margin: 0 0 6px; font-size: 16px; }
+      .step p { margin: 0; color: var(--dim); font-size: 14px; }
+
+      /* Privacy strip */
+      .privacy {
+        background: linear-gradient(135deg, #10233a, #101722);
+        border: 1px solid var(--border); border-radius: 20px; padding: 40px;
+        display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
+      }
+      .privacy h2 { margin: 0 0 8px; font-size: 24px; letter-spacing: -0.01em; }
+      .privacy p { margin: 0; color: var(--dim); max-width: 60ch; }
+      .privacy .ic { color: var(--good); }
+
+      /* CTA */
+      .cta { text-align: center; padding: 72px 0; }
+      .cta h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; margin: 0 0 14px; text-wrap: balance; }
+      .cta p { color: var(--dim); margin: 0 0 26px; }
+      .code {
+        font-family: var(--mono); font-size: 13px; color: var(--dim);
+        background: #0e1219; border: 1px solid var(--border); border-radius: 10px;
+        padding: 12px 16px; display: inline-block; margin-top: 22px; text-align: left; white-space: pre;
+        overflow-x: auto; max-width: 100%;
+      }
+
+      /* Footer */
+      footer { border-top: 1px solid var(--border); margin-top: 40px; }
+      .foot { display: flex; align-items: center; justify-content: space-between; padding: 28px 24px; flex-wrap: wrap; gap: 14px; }
+      .foot__links { display: flex; gap: 20px; font-size: 14px; }
+      .foot__links a { color: var(--dim); text-decoration: none; }
+      .foot__links a:hover { color: var(--text); }
+      .foot small { color: var(--faint); font-size: 13px; }
+
+      @media (max-width: 860px) {
+        .hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 0 56px; }
+        .features, .steps { grid-template-columns: 1fr; }
+        .nav__links a:not(.btn) { display: none; }
+      }
+      @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto; } }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <span class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="2.5"/></svg>
+        Open Screenshot
+      </span>
+      <span class="nav__links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="./privacy.html">Privacy</a>
+        <a class="btn btn--ghost" href="https://github.com/jitheshkt/open-screenshot" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.16.58.67.48A10 10 0 0 0 22 12c0-5.52-4.48-10-10-10z"/></svg>
+          GitHub
+        </a>
+      </span>
+    </nav>
+
+    <header class="wrap hero">
+      <div>
+        <p class="eyebrow"><span class="dot"></span> Open source · Chrome extension</p>
+        <h1>Beautiful screenshots.<br /><span class="grad">Zero nonsense.</span></h1>
+        <p class="lede">
+          Capture a page, drop it onto a gradient, mark it up with arrows, text and blur,
+          then copy or download. Fast, free, and completely private — nothing leaves your browser.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn--primary" href="https://github.com/jitheshkt/open-screenshot" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.16.58.67.48A10 10 0 0 0 22 12c0-5.52-4.48-10-10-10z"/></svg>
+            Get it on GitHub
+          </a>
+          <a class="btn btn--ghost" href="#how">See how it works</a>
+        </div>
+        <div class="trust">
+          <span><span class="tick">✓</span> No account</span>
+          <span><span class="tick">✓</span> No tracking</span>
+          <span><span class="tick">✓</span> No ads</span>
+          <span><span class="tick">✓</span> MIT licensed</span>
+        </div>
+      </div>
+
+      <div class="demo" aria-hidden="true">
+        <span class="demo__badge">◲ exported with Open Screenshot</span>
+        <div class="window">
+          <div class="window__bar"><i></i><i></i><i></i></div>
+          <div class="window__body">
+            <div class="line title"></div>
+            <div class="line w-90"></div>
+            <div class="line w-70 hl"></div>
+            <div class="line w-90"></div>
+            <div class="line w-50"></div>
+          </div>
+        </div>
+        <svg class="demo__arrow" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M88 14 C 60 30, 45 45, 30 78" />
+          <path d="M30 78 L 46 66 M30 78 L 40 60" />
+        </svg>
+      </div>
+    </header>
+
+    <section id="features" class="wrap">
+      <div class="section-head">
+        <h2>Everything you need, nothing you don't</h2>
+        <p>The features that matter, done well — without the bloat and permissions the others ship.</p>
+      </div>
+      <div class="features">
+        <div class="card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
+          <h3>Three capture modes</h3>
+          <p>Visible area, full scrolling page (stitched), or drag out any region — from the popup or a keyboard shortcut.</p>
+        </div>
+        <div class="card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+          <h3>Gradient backgrounds</h3>
+          <p>Linear or radial gradients at any angle, a preset palette, plus padding, rounded corners and shadow.</p>
+        </div>
+        <div class="card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+          <h3>Annotate</h3>
+          <p>Arrows, lines, circles, text, highlights and blur/redact. Select, move and delete — right on the canvas.</p>
+        </div>
+        <div class="card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></span>
+          <h3>Copy or download</h3>
+          <p>Export a pixel-perfect PNG or copy straight to your clipboard. What you see is exactly what you get.</p>
+        </div>
+        <div class="card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+          <h3>Private by design</h3>
+          <p>No account, no analytics, no network calls. Only <code>activeTab</code> access — no broad-host warning.</p>
+        </div>
+        <div class="card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></span>
+          <h3>Truly open source</h3>
+          <p>MIT licensed. Read every line, audit the permissions, request features, or fork it and make it yours.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="wrap">
+      <div class="section-head">
+        <h2>Capture → beautify → share</h2>
+        <p>Three steps, a few seconds.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__n"></div>
+          <h3>Capture</h3>
+          <p>Click the toolbar icon or hit a shortcut, then pick visible area, full page, or a region.</p>
+        </div>
+        <div class="step">
+          <div class="step__n"></div>
+          <h3>Beautify</h3>
+          <p>Add a gradient, padding and shadow, then annotate with arrows, text, highlights and blur.</p>
+        </div>
+        <div class="step">
+          <div class="step__n"></div>
+          <h3>Share</h3>
+          <p>Copy to clipboard or download the PNG. Your style settings are remembered for next time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="privacy">
+        <div>
+          <h2><span class="ic">🔒</span> Your screenshots stay yours</h2>
+          <p>
+            Open Screenshot does everything locally in your browser. It collects no personal data,
+            has no analytics, and makes no network requests. Read the full policy for the details.
+          </p>
+        </div>
+        <a class="btn btn--ghost" href="./privacy.html">Privacy policy →</a>
+      </div>
+    </section>
+
+    <section class="wrap cta">
+      <h2>Ready to take a better screenshot?</h2>
+      <p>Free and open source. A Chrome Web Store listing is on the way.</p>
+      <a class="btn btn--primary" href="https://github.com/jitheshkt/open-screenshot" target="_blank" rel="noreferrer">Get it on GitHub</a>
+      <div class="code">git clone https://github.com/jitheshkt/open-screenshot
+npm install && npm run build
+# then load /dist unpacked at chrome://extensions</div>
+    </section>
+
+    <footer>
+      <div class="foot wrap">
+        <span class="brand" style="font-size:14px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="2.5"/></svg>
+          Open Screenshot
+        </span>
+        <span class="foot__links">
+          <a href="https://github.com/jitheshkt/open-screenshot" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="./privacy.html">Privacy</a>
+          <a href="https://github.com/jitheshkt/open-screenshot/issues/new/choose" target="_blank" rel="noreferrer">Request a feature</a>
+          <a href="https://github.com/jitheshkt/open-screenshot/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a>
+        </span>
+        <small>© 2026 Open Screenshot contributors</small>
+      </div>
+    </footer>
+  </body>
+</html>
