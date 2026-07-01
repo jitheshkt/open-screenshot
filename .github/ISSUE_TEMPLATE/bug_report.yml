@@ -1,0 +1,75 @@
+name: 🐛 Bug report
+description: Something isn't working the way it should
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please search
+        [existing issues](../?q=is%3Aissue) first to avoid duplicates.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what actually happened?
+      placeholder: |
+        1. Clicked "Full page" on …
+        2. Expected the whole page to be captured
+        3. Instead the header was duplicated at each seam
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which part is affected?
+      options:
+        - Visible area capture
+        - Full page capture
+        - Selection capture
+        - Editor — background / effects
+        - Editor — annotations
+        - Editor — export (copy / download)
+        - Popup / shortcuts
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: chrome-version
+    attributes:
+      label: Chrome version
+      description: Find it at chrome://version
+      placeholder: e.g. 126.0.6478.127
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. macOS 15.5, Windows 11
+    validations:
+      required: true
+  - type: input
+    id: page-type
+    attributes:
+      label: Page / URL type
+      description: The kind of page it happened on (a specific URL, or "any").
+      placeholder: e.g. any https:// page, or https://example.com
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: >
+        Errors help a lot. Open the editor tab's DevTools (or the service
+        worker console at chrome://extensions → Open Screenshot → "service
+        worker") and paste anything relevant here.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true
+        - label: I'm on the latest version of the extension.
+          required: false

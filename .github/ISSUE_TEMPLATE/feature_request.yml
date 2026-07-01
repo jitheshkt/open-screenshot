@@ -1,0 +1,56 @@
+name: ✨ Feature request
+description: Suggest an idea or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! Please search
+        [existing requests](../?q=is%3Aissue+label%3Aenhancement) first — if it's
+        already there, add a 👍 or a comment instead of opening a duplicate.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: >
+        Describe the situation or pain point, not just the solution. This helps
+        us find the best fix — which might be different from what you imagined.
+      placeholder: |
+        When I capture a full page with a sticky header, the header repeats at
+        every scroll seam and I have to crop it out by hand.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to happen?
+      description: The feature or change you have in mind.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area does this touch?
+      options:
+        - Capture (visible / full page / selection)
+        - Background & effects
+        - Annotations
+        - Export (formats, clipboard, saving)
+        - Popup / shortcuts
+        - New panel (Layout / Styles / Collage)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: mockup
+    attributes:
+      label: Mockups or references
+      description: Screenshots, sketches, or links to tools that do it well. Optional but very helpful.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true

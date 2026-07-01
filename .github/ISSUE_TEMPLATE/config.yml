@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & discussion
+    url: https://github.com/jitheshkt/open-screenshot/discussions
+    about: Ask questions or share how you use Open Screenshot (not a bug or feature request).
