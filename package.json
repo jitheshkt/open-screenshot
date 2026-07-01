@@ -9,7 +9,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/gen-icons.mjs"
+    "icons": "node scripts/gen-icons.mjs",
+    "zip": "npm run build && cd dist && zip -r ../open-screenshot.zip . -x '*.map' && cd .."
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.28",

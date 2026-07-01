@@ -201,6 +201,30 @@ Contributions are welcome. A good PR:
 
 For anything non-trivial, open an issue first so we can agree on the approach.
 
+## Releasing
+
+Releases are cut by pushing a version tag — the
+[Release workflow](.github/workflows/release.yml) then builds the extension,
+packages `dist/` into a zip, and publishes a GitHub Release with the zip
+attached (unpack it into `chrome://extensions` to try a build without cloning).
+
+The tag must match the `version` in `package.json` (the manifest reads it):
+
+```bash
+# bump version + create the commit and matching tag in one step
+npm version minor            # 0.1.0 -> 0.2.0, tags v0.2.0
+git push --follow-tags       # pushes the commit and the tag -> triggers the release
+
+# (the very first v0.1.0 tag, where package.json is already 0.1.0:)
+# git tag v0.1.0 && git push origin v0.1.0
+```
+
+Build a package locally without a release:
+
+```bash
+npm run zip   # -> open-screenshot.zip (dist/ contents, source maps excluded)
+```
+
 ## License
 
 [MIT](./LICENSE) © Open Screenshot contributors

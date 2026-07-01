@@ -1,0 +1,42 @@
+name: Release
+
+# Pushing a version tag (e.g. v0.1.0) builds the extension, packages dist/ into
+# a zip, and publishes a GitHub Release with the zip attached.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write # needed to create the release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run icons
+      - run: npm run typecheck
+      - run: npm run build
+
+      - name: Package dist/ into a zip
+        run: |
+          cd dist
+          zip -r "../open-screenshot-${GITHUB_REF_NAME}.zip" . -x '*.map'
+          cd ..
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            "open-screenshot-${GITHUB_REF_NAME}.zip" \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes
