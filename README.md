@@ -98,7 +98,6 @@ manifest.config.ts        # MV3 manifest (typed, via @crxjs)
 vite.config.ts
 src/
   background/index.ts      # service worker — all capture ops + opens the editor
-  content/index.ts         # runs in the page (page metrics helper)
   popup/                   # the toolbar popup UI
   editor/
     main.ts                # bootstrap: image load, panels, export
@@ -143,18 +142,18 @@ Extending it:
 
 ## Permissions
 
-We keep the permission set as small as the feature set allows:
+We keep the permission set as small as the feature set allows — just three, with
+**no broad host access**:
 
-| Permission            | Why                                                     |
-| --------------------- | ------------------------------------------------------- |
-| `activeTab` / `tabs`  | Identify the tab to capture                             |
-| `scripting`           | Inject the selection overlay and scroll for full-page   |
-| `<all_urls>` (host)   | `captureVisibleTab` needs host access to read the pixels |
-| `storage`             | Hold the pending capture + remember your preferences     |
-| `downloads`           | Save the exported PNG                                    |
+| Permission  | Why                                                                                     |
+| ----------- | --------------------------------------------------------------------------------------- |
+| `activeTab` | Temporary access to the current tab **only when you invoke the extension** (toolbar click or shortcut) — used to read the pixels and, for full-page/selection, to scroll and draw the selection overlay |
+| `scripting` | Run the scroll/measure and selection-overlay logic in that active tab                    |
+| `storage`   | Hold the pending capture and remember your preferences                                   |
 
-Nothing is sent anywhere — there are no analytics, no remote endpoints, no
-telemetry.
+Because there's no `host_permissions` and no always-on content script, Chrome
+does **not** show the "read and change all your data on all websites" warning.
+Nothing is sent anywhere — no analytics, no remote endpoints, no telemetry.
 
 ## Requesting a feature or reporting a bug
 

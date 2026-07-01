@@ -26,15 +26,10 @@ export default defineManifest({
     service_worker: 'src/background/index.ts',
     type: 'module',
   },
-  content_scripts: [
-    {
-      matches: ['<all_urls>'],
-      js: ['src/content/index.ts'],
-      run_at: 'document_idle',
-    },
-  ],
-  permissions: ['activeTab', 'tabs', 'scripting', 'storage', 'downloads'],
-  host_permissions: ['<all_urls>'],
+  // activeTab grants temporary access to the current tab when the user invokes
+  // the extension (toolbar click or a keyboard command) — enough for
+  // captureVisibleTab and scripting.executeScript, with no broad-host warning.
+  permissions: ['activeTab', 'scripting', 'storage'],
   commands: {
     'capture-visible': {
       suggested_key: {
