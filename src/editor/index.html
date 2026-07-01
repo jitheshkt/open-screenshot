@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit · Open Screenshot</title>
+    <link rel="stylesheet" href="./editor.css" />
+  </head>
+  <body>
+    <div class="toolbar">
+      <div class="toolbar__group">
+        <span class="brand">◲ Open Screenshot</span>
+      </div>
+      <div class="toolbar__group">
+        <!-- TODO(features): annotation tools (pen, arrow, rect, text, blur). -->
+        <button id="copy" class="btn">Copy</button>
+        <button id="download" class="btn btn--primary">Download PNG</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrap">
+      <img id="preview" alt="Captured screenshot" />
+      <p id="empty" class="empty" hidden>
+        No capture found. Open the extension and take a screenshot.
+      </p>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

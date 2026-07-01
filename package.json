@@ -1,0 +1,21 @@
+{
+  "name": "open-screenshot",
+  "version": "0.1.0",
+  "description": "An open-source, no-nonsense screenshot extension for Chrome.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "icons": "node scripts/gen-icons.mjs"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.28",
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.19.43",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Screenshot</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <span class="logo">◲</span>
+      <h1>Open Screenshot</h1>
+    </header>
+
+    <main class="actions">
+      <button class="action" data-mode="visible">
+        <span class="action__icon">🖥️</span>
+        <span class="action__label">
+          <strong>Visible area</strong>
+          <small>Capture what you see now · Alt+Shift+V</small>
+        </span>
+      </button>
+
+      <button class="action" data-mode="fullpage">
+        <span class="action__icon">📜</span>
+        <span class="action__label">
+          <strong>Full page</strong>
+          <small>Scroll and stitch · Alt+Shift+F</small>
+        </span>
+      </button>
+
+      <button class="action" data-mode="selection">
+        <span class="action__icon">✂️</span>
+        <span class="action__label">
+          <strong>Selection</strong>
+          <small>Pick a region to capture</small>
+        </span>
+      </button>
+    </main>
+
+    <footer class="footer">
+      <span id="status" class="status"></span>
+      <a
+        class="footer__link"
+        href="https://github.com/"
+        target="_blank"
+        rel="noreferrer"
+        >Open source ↗</a
+      >
+    </footer>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
