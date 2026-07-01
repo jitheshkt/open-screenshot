@@ -24,7 +24,7 @@ existing options are bloated, ad-ridden, or want too many permissions.
 
 ```bash
 npm install
-npm run icons     # generate placeholder icons (one-time)
+npm run icons     # rasterize icons/icon.svg -> PNGs (re-run after editing the SVG)
 npm run dev       # start Vite in watch mode
 ```
 
@@ -52,8 +52,10 @@ src/
   popup/                # the toolbar popup UI
   editor/               # preview + copy + download; annotation canvas (later)
   lib/messages.ts       # typed message contract between the above
-scripts/gen-icons.mjs   # generates placeholder PNG icons
-icons/                  # extension icons
+scripts/gen-icons.mjs   # rasterizes icon.svg -> PNGs via @resvg/resvg-js
+icons/
+  icon.svg              # brand mark — single source of truth (edit this)
+  icon-{16,32,48,128}.png  # generated; do not hand-edit
 ```
 
 ## How it fits together
@@ -76,10 +78,16 @@ get a handler in `src/background/index.ts`.
 
 ## Roadmap
 
-- [ ] Full-page scroll-and-stitch capture
-- [ ] Drag-to-select region capture
-- [ ] Annotation tools (pen, arrow, rectangle, text, blur/redact)
-- [ ] Crop in editor
+- [x] Editor engine — canvas compositor (the canvas *is* the export)
+- [x] Gradient/solid background maker (linear/radial, angle, colors, swatches)
+- [x] Effects — padding, corner radius, shadow
+- [x] Annotation drawing — text, arrow, line, circle, highlight, redact/blur
+- [x] Select / move / delete annotations (None tool)
+- [ ] Resize handles for annotations
+- [ ] Undo / redo
+- [x] Full-page scroll-and-stitch capture
+- [x] Drag-to-select region capture
+- [ ] Layout / Styles / Collage panels
 - [ ] Copy/download as JPEG/WebP with quality control
 - [ ] Options page (default format, shortcuts, save location)
 

@@ -1,6 +1,6 @@
 /**
- * Popup entry point. Wires the capture buttons to the background worker and
- * opens the editor with the resulting screenshot.
+ * Popup entry point. Sends a capture request to the background worker, which
+ * performs the capture and opens the editor with the result.
  */
 
 import { sendMessage } from '@/lib/messages';
@@ -21,22 +21,22 @@ function setBusy(busy: boolean): void {
 }
 
 async function capture(mode: CaptureMode): Promise<void> {
+  // Selection needs the user to interact with the page, which closes the popup.
+  // Fire the request and let the background worker drive the rest.
+  if (mode === 'selection') {
+    void sendMessage<CaptureResult>({ type: 'CAPTURE', mode });
+    window.close();
+    return;
+  }
+
   setBusy(true);
   setStatus('Capturing…');
   try {
     const result = await sendMessage<CaptureResult>({ type: 'CAPTURE', mode });
-    if (!result.ok || !result.dataUrl) {
-      throw new Error(result.error ?? 'Capture failed');
-    }
-    // Hand the image to the editor via session storage, then open it.
-    await chrome.storage.session.set({ pendingCapture: result.dataUrl });
-    await chrome.tabs.create({
-      url: chrome.runtime.getURL('src/editor/index.html'),
-    });
-    window.close();
+    if (!result.ok) throw new Error(result.error ?? 'Capture failed');
+    window.close(); // background already opened the editor
   } catch (err) {
     setStatus(String((err as Error)?.message ?? err), true);
-  } finally {
     setBusy(false);
   }
 }

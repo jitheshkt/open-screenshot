@@ -50,5 +50,12 @@ export default defineManifest({
       },
       description: 'Capture the full scrolling page',
     },
+    'capture-selection': {
+      suggested_key: {
+        default: 'Alt+Shift+S',
+        mac: 'Alt+Shift+S',
+      },
+      description: 'Capture a selected region',
+    },
   },
 });

@@ -34,8 +34,13 @@ body {
 }
 
 .logo {
-  font-size: 18px;
+  display: inline-flex;
   color: var(--accent);
+}
+
+.logo svg {
+  width: 20px;
+  height: 20px;
 }
 
 .header h1 {
@@ -84,8 +89,20 @@ body {
 }
 
 .action__icon {
-  font-size: 20px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 9px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.action__icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .action__label {
